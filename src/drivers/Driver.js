@@ -8,3 +8,6 @@ class Driver extends EventEmitter
   constructor() { super(); }
   ping() { }
 }
+
+
+module.exports = Driver;

@@ -5,7 +5,7 @@ let that;
 
 class KeepAlive
 {
-  constructor(whatever)
+  constructor(whatever, sleep=SLEEP)
   {
     this.ws = whatever;
     this.timer = null;

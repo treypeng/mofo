@@ -37,7 +37,7 @@ class Deribit extends Driver
       this.keepalive = new KeepAlive(this.ws);
       // this.keepalive.start.apply(this.keepalive);
       this.keepalive.start();//).bind(this.keepalive);
-      this.fire('connected', {success:true});
+      this.fire('connected', {success:true, info: 'Connected: Deribit api v2'});
     });
 
     this.ws.on('message',       this._handle_messages.bind(this) );

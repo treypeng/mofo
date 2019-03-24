@@ -6,6 +6,7 @@ const EventEmitter = require('../event.js');
 class Driver extends EventEmitter
 {
   constructor() { super(); }
+  start() { }
   ping() { }
 }
 

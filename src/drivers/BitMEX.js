@@ -3,7 +3,7 @@ const assert    = require('assert').strict;
 const Driver    = require('./Driver');
 const Frame     = require('./Frame');
 const WebSocket = require('ws');
-const KeepAlive = require('./KeepAlive');
+const KeepAlive = require('./KeepAlive').BitMEX;
 const WS_URI    = 'wss://www.bitmex.com/realtime';
 const ID        = 'BITMEX';
 
@@ -143,7 +143,7 @@ class BitMEX extends Driver
     // 4. Errors
     else if (res.error)
     {
-      this.fire('error', this.error);
+      this.fire('error', res.error);
     }
 
   }

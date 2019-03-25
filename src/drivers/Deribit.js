@@ -5,7 +5,7 @@ const Frame     = require('./Frame');
 const WebSocket = require('ws');
 const KeepAlive = require('./KeepAlive').Deribit;
 const WS_URI    = 'wss://test.deribit.com/ws/api/v2/';
-const ID        = 'DERIBIT';
+const ID        = 'deribit';
 
 const BASE_ACTION = '/api/v2/public/';
 
@@ -41,8 +41,7 @@ class Deribit extends Driver
     });
 
     this.ws.on('message',       this._handle_messages.bind(this) );
-    this.ws.on('close', () => { this.fire('close');             });
-
+    this.ws.on('close', () => { this.fire('close', {info: `${ID}: Goodbye`}); });
   }
 
   ping()
@@ -63,7 +62,7 @@ class Deribit extends Driver
     this._sub();
   }
 
-  close()
+  stop(cb=null)
   {
     this.ws.close();
   }
@@ -112,6 +111,8 @@ class Deribit extends Driver
     if (!res.params)
       return;
 
+    let newframe = false;
+
     // Do we have a message about a channel?
     if (res.params.channel)
     {
@@ -120,7 +121,7 @@ class Deribit extends Driver
       {
         case 'ticker':
             // Parse the data and attach to our delta-friendly Frame object
-            this.frame.adopt(ID, res.params.data);
+            newframe = this.frame.adopt(ID, res.params.data);
           break;
 
         default:
@@ -128,7 +129,8 @@ class Deribit extends Driver
       }
 
       // Tell client/multiplexer there's fresh data to get fresh with
-      this.fire('frame', {from: ID, data: this.frame.data})
+      if (newframe)
+        this.fire('frame', {from: ID, data: this.frame.data})
 
    } else  {
      console.log(`Unexpected message from Deribit:`);

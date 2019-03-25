@@ -5,7 +5,7 @@ const Frame     = require('./Frame');
 const WebSocket = require('ws');
 const KeepAlive = require('./KeepAlive').BitMEX;
 const WS_URI    = 'wss://www.bitmex.com/realtime';
-const ID        = 'BITMEX';
+const ID        = 'bitmex';
 
 /*
     Connects
@@ -36,7 +36,7 @@ class BitMEX extends Driver
     });
 
     this.ws.on('message',       this._handle_messages.bind(this) );
-    this.ws.on('close', () => { this.fire('close');             });
+    this.ws.on('close', () => { this.fire('close', {info: `${ID}: Goodbye`}); });
 
   }
 
@@ -53,7 +53,7 @@ class BitMEX extends Driver
     this._sub();
   }
 
-  close()
+  stop(cb=null)
   {
     this.ws.close();
   }
@@ -95,22 +95,20 @@ class BitMEX extends Driver
 
     res = JSON.parse(res);
 
-    //{"success":true,"subscribe":"tradeBin1m:XBTUSD","request":{"op":"subscribe","args":"tradeBin1m:XBTUSD"}
+    let newframe = false;
 
-    // 1. One-time connection msg
+    // one-time connect message
     if (res.info)
-    {
       this.fire('connected', {info: res.info, limit: res.limit.remaining});
-    }
 
-    // 2. Successfully subscribed to a Topic
+    // Successfully subscribed to a Topic
     else if (res.success)
     {
       // `subscribe` == res.table:row.symbol (below...)
       this.fire(res.subscribe, {status: 'subscribed'});
     }
 
-    // 3. Topic data
+    // Topic data
     else if (res.data)
     {
       switch(res.table)
@@ -118,26 +116,19 @@ class BitMEX extends Driver
         case 'instrument':
           // .data is an array and potentially contains multiple instruments
           // FIXME: make Frame class less stupid and support more than one instr.
-          for (let d of res.data)
-            this.frame.adopt(ID, d);
+          // for (let d of res.data)
+
+          newframe = this.frame.adopt(ID, res.data[0]);
 
           break;
 
         default:
           break; // ignore
       }
-      // console.log(res.data);
-      // this.fire(res.table)
-      // console.log(this.frame);
-      this.fire('frame', {from: ID, data: this.frame.data})
-      // if (res.table == 'liquidation') // HACK to show liqs from all instruments
-      // {
-      //   for (let row of res.data)
-      //     this.fire(`${res.table}`, {data: row, time: Date.now()});
-      // } else {
-      // for (let row of res.data)
-      //   this.fire(`${res.table}:${row.symbol}`, {data: row});
-      // }
+
+      if (newframe)
+        this.fire('frame', {from: ID, data: this.frame.data})
+
     }
 
     // 4. Errors

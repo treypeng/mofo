@@ -2,14 +2,11 @@
 ## MOFO
 
 Scrapes instrument tick data from BitMEX and writes to an Influx timeseries database.
-Also provides real-time streaming visualisation using Chronograf.
-
-To see the visualiser, when running, open http://localhost:8888/
-(note you may need to use network host IP instead of localhost)
+Also provides real-time streaming visualisation using Chronograf (see `./stack/README.md` for more info)
 
 Will probably subsume this whole thing into a solid stack at some point. Naked nodejs service for now.
 
-### Configuration
+### Installation
 
 
 ```

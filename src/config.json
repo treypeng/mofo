@@ -1,6 +1,0 @@
-{
-  "sources": [
-    {"name": "BitMEX",  "path":"./drivers/BitMEX.js"},
-    {"name": "Deribit", "path":"./drivers/Deribit.js", "uri": "wss://www.deribit.com/ws/api/v1/"},
-  ]
-}

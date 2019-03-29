@@ -39,7 +39,7 @@ npm start
 Can you npm's Forever service to run in background.
 Press Escape to stop the writing service.
 
-### Terminating
+### Running
 
 To quit the background scraper and db services and remove the containers run:
 

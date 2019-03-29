@@ -83,8 +83,9 @@ class InfluxManager
 
     this.influx.writePoints(points, { precision: 'ms' }).then(() => {
       // console.log('=> Inserted');
+      L.debug('Inserted OK');
     }).catch(error => {
-      L.error(`Error saving data to InfluxDB! ${error.stack}`)
+      L.error(`Error saving data to InfluxDB! Is the docker service running?`);
     });
   }
 }

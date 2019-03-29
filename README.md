@@ -21,7 +21,7 @@ To initialise the database and scraper servers in the background:
 Then to begin db writing
 
 ```
-node mofo
+npm start
 ```
 Can you npm's Forever service to run in background.
 Press Escape to stop the writing service.

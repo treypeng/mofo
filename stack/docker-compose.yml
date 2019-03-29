@@ -1,0 +1,30 @@
+version: '3'
+services:
+  influxdb:
+    image: influxdb:1.7
+    volumes:
+      # Mount for influxdb data directory
+      - ./influxdb:/var/lib/influxdb
+      # Mount for influxdb configuration
+      # - ./influxdb/config/:/etc/influxdb/  # dont need this idk lol
+    ports:
+      # The API for InfluxDB is served on port 8086
+      - "8086:8086"
+      - "8082:8082"
+  chronograf:
+    image: chronograf:1.7
+    volumes:
+      # Mount for chronograf database
+      - ./chronograf:/var/lib/chronograf
+    ports:
+      # The WebUI for Chronograf is served on port 8888
+      - "8888:8888"
+    depends_on:
+      - influxdb
+
+  bitmex_delta_server:
+    image: treypeng/bitmex-delta-server:alpha 
+    volumes:
+      - ./bitmex-delta-server/:/conf/
+    ports:
+      - "4444:4444"

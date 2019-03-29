@@ -4,14 +4,15 @@
   "description": "",
   "main": "main.js",
   "scripts": {
+    "start": "node mofo.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "forever": "^0.15.3",
     "influx": "^5.0.7",
-    "keypress": "^0.2.1"
+    "keypress": "^0.2.1",
+    "node-fetch": "^2.3.0"
   }
 }

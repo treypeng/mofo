@@ -6,7 +6,7 @@ Will probably subsume this whole thing into a solid stack at some point. Naked n
 
 ```npm install```
 
-There are two config files. One for the scraper `./stack/bitmex-delta-server/bitmex-delta-server.js` 
+There are two config files. One for the scraper `./stack/bitmex-delta-server/bitmex-delta-server.js`
 
 **You must edit this before booting to choose which instruments to scrape.** Defaults; XBTUSD, ETHUSD.
 
@@ -21,5 +21,5 @@ To initialise the database and scraper servers:
 Then to begin db writing
 
 ```
-node mofo 
+node mofo
 ```

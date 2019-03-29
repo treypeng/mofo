@@ -34,12 +34,14 @@ let timer = null;
   try {
 
     await influxman.init();
-    L.info(`Connected. Polling @ ${( 1000 / config.frequency ).toFixed(2)}Hz.`);
+    L.info( `Connected. Polling @ ${( 1000 / config.frequency ).toFixed(2)}Hz.` );
+    L.info( `Press <ESC> to stop` );
     timer = setInterval( frame, config.frequency );
 
   } catch(error) {
 
-    L.error(`Fatal: Error initialising Influx. Is the docker service running? Aborting.`);
+    L.error( `Fatal: Error initialising Influx. Is the docker service running? Aborting.` );
+    L.error( ` ** Sometimes stack is slow to boot. Try again in 5-10 seconds. ** ` );
     process.exit( 1 );
 
   }

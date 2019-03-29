@@ -9,12 +9,13 @@ To see the visualiser, when running, open http://localhost:8888/
 
 Will probably subsume this whole thing into a solid stack at some point. Naked nodejs service for now.
 
+### Configuration
 
-### Installation
 
 ```
 npm install
 ```
+
 
 ### Configuration
 

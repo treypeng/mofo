@@ -1,4 +1,5 @@
 #!/bin/bash -ex
 
 # start InfluxDB, Chronograf and Bitmex Delta Server together
-(cd stack && docker-compose up)
+# starts in background, remove -d flag if needed
+(cd stack && docker-compose up -d)

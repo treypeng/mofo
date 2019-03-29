@@ -6,6 +6,7 @@ class InfluxManager
   constructor(config)
   {
     this.config = config;
+    this.influx;
   }
 
   async init()
@@ -13,6 +14,7 @@ class InfluxManager
 
     L.debug(`Writing to InfluxDB ${this.config.influx.database}:'${this.config.influx.measurement}'`);
 
+    // This should throw an error if influx not running. But doens't. :thonking:
     this.influx = new Influx.InfluxDB({
      host: this.config.influx.host,
      port: this.config.influx.port,
@@ -39,7 +41,6 @@ class InfluxManager
        }
      ]
     });
-
 
     // lolwut? You have to create a database ... a-a-after opening it? excusemewtf
     // why isn't this a static method? feels hacky af, try harder API nerds.

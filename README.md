@@ -39,10 +39,17 @@ npm start
 Can you npm's Forever service to run in background.
 Press Escape to stop the writing service.
 
-### Running
+### Terminating
 
 To quit the background scraper and db services and remove the containers run:
 
 ```
 ./stop.sh
 ```
+
+
+## Visualisation
+
+The stack comes with Chronograf via a web based UI. It's proper nice. You can visually add and arrange real-time metrics widgets (presets included) and also complex queries if needed. Pretty intuitive and easy to use, takes seconds to add a widget showing the real-time mark price graph, open interest whatever. 
+
+Connect to it with your network host IP (e.g. 192.168.xx.xx) rather than loopback. Also use the same host ip when telling it where to find the data (InfluxDb) 

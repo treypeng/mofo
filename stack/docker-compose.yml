@@ -13,6 +13,7 @@ services:
       - "8082:8082"
   chronograf:
     image: chronograf:1.7
+    command: --basepath /mofo
     volumes:
       # Mount for chronograf database
       - ./chronograf:/var/lib/chronograf
@@ -23,7 +24,7 @@ services:
       - influxdb
 
   bitmex_delta_server:
-    image: treypeng/bitmex-delta-server:alpha 
+    image: treypeng/bitmex-delta-server:alpha
     volumes:
       - ./bitmex-delta-server/:/conf/
     ports:

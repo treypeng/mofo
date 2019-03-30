@@ -26,7 +26,7 @@ class InfluxManager
          fields: {
            openinterest:  Influx.FieldType.FLOAT,
            volume:        Influx.FieldType.FLOAT,
-           totalvolume:   Influx.FieldType.FLOAT,
+           volume24:      Influx.FieldType.FLOAT,
            vwap:          Influx.FieldType.FLOAT,
            fundingrate:   Influx.FieldType.FLOAT,
            last:          Influx.FieldType.FLOAT,
@@ -69,7 +69,7 @@ class InfluxManager
         fields: {
           openinterest:   Number(f.openInterest),
           volume:         Number(f.volume),
-          totalvolume:    Number(f.totalVolume),
+          volume24:       Number(f.volume24h),
           vwap:           Number(f.vwap),
           fundingrate:    Number(f.fundingRate),
           last:           Number(f.lastPrice),

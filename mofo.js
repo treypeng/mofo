@@ -65,12 +65,13 @@ async function frame()
   {
     for (let sym of ep.symbols)
     {
-      let res = null;
+      let res = null, data;
 
       // Just fire these iteratively for now
       try {
 
         res = await fetch( `${mex.uri}:${mex.port}/${ep.name}?symbol=${sym}` );
+        data = (await res.json())[0];
 
       } catch ( error ) {
 
@@ -79,9 +80,9 @@ async function frame()
 
       }
 
-      if (!res) continue; // assume temporary glitch
+      // assume temporary glitch
+      if (!res) continue;
 
-      let data = (await res.json())[0];
       // mex api always returns array even for single request
       frames.push( data );
 

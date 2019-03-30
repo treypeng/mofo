@@ -7,6 +7,7 @@ class InfluxManager
   {
     this.config = config;
     this.influx;
+    this.prev = [];
   }
 
   async init()
@@ -87,6 +88,25 @@ class InfluxManager
     }).catch(error => {
       L.error(`Error saving data to InfluxDB! Is the docker service running?`);
     });
+
+    let num = 0, tmp = [];
+    for (let p of points)
+    {
+      let uid = `${p.timestamp}:${p.tags.instrument}`;
+      if (!this.prev.includes(String(uid)))
+      {
+        tmp.push(uid);
+        num++;
+      }
+    }
+
+    this.prev = this.prev.concat(tmp);
+    this.prev = this.prev.slice(-10);
+
+    // console.log(this.prev)
+
+    return num;
+
   }
 }
 

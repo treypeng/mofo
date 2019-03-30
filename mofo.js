@@ -35,7 +35,7 @@ let timer = null;
 
     await influxman.init();
     L.info( `Connected. Polling @ ${( 1000 / config.frequency ).toFixed(2)}Hz.` );
-    L.info( `Press <ESC> to stop` );
+    L.print( `> Press [ESC] to terminate` );
     timer = setInterval( frame, config.frequency );
 
   } catch(error) {
@@ -53,6 +53,7 @@ let timer = null;
 // This doesn't exist for Deribit etc and would need to be written (not too taxing unles managing the order book)
 // Just pick the first one for now which should be mex
 let mex = config.sources[0];
+let totalwritten = 0;
 
 async function frame()
 {
@@ -78,8 +79,6 @@ async function frame()
 
       }
 
-
-
       if (!res) continue; // assume temporary glitch
 
       let data = (await res.json())[0];
@@ -91,10 +90,16 @@ async function frame()
     }
   }
 
+  let num = 0;
+
   // Write array of 'frames'. Each frame contains the fields we are interested in (price, open interest etc)
-  try {  influxman.write( frames ) } catch ( error ) {
+  try {  num = influxman.write( frames ) } catch ( error ) {
     L.error( `Error writing to Influx. Is the docker service running?` );
   }
+
+  totalwritten += num;
+  let tp = totalwritten > 1500 ? (totalwritten/1000).toFixed(1) + 'k' : totalwritten;
+  process.stdout.write(`\r  Written ${tp} total ticks.\t`);
 
 }
 
@@ -109,6 +114,7 @@ process.stdin.on( 'keypress', (ch, key) => {
 
   if (key && key.name == 'escape')
   {
+    console.log();
     L.warn('Shutdown...');
 
     // clean up nicely because professional

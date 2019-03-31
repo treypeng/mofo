@@ -8,6 +8,7 @@ class InfluxManager
     this.config = config;
     this.influx;
     this.prev = [];
+    this.vdelta = {};
   }
 
   async init()
@@ -54,11 +55,20 @@ class InfluxManager
 
   write(frames)
   {
+
     let points = [];
 
     for (let f of frames)
     {
-      let timestamp = (new Date(Date.parse(f.timestamp))).getTime();
+      this.vdelta[f.uid] = this.vdelta[f.uid] || { t: 0, v: 0 };
+
+      // Firstly, check that this unique symbol has actually received
+      // new information by comparing timestamp
+      let timestamp = (new Date(Date.parse( f.timestamp ))).getTime();
+      if (timestamp <= this.vdelta[f.uid].t) continue;
+
+      //subtract current cumulative volume from last tick's cum volume to get interval vol.
+      let deltavol = Math.max( 0, f.volume - (this.vdelta[f.uid].v || f.volume ));
 
       points.push({
         measurement: this.config.influx.measurement,
@@ -68,7 +78,7 @@ class InfluxManager
         },
         fields: {
           openinterest:   Number(f.openInterest),
-          volume:         Number(f.volume),
+          volume:         Number(deltavol),
           volume24:       Number(f.volume24h),
           vwap:           Number(f.vwap),
           fundingrate:    Number(f.fundingRate),
@@ -80,7 +90,12 @@ class InfluxManager
         },
         timestamp: timestamp
       });
+
+      this.vdelta[f.uid] = { t: timestamp, v: f.volume }
     }
+
+
+
 
     this.influx.writePoints(points, { precision: 'ms' }).then(() => {
       // console.log('=> Inserted');
@@ -102,8 +117,6 @@ class InfluxManager
 
     this.prev = this.prev.concat(tmp);
     this.prev = this.prev.slice(-10);
-
-    // console.log(this.prev)
 
     return num;
 

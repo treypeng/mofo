@@ -11,15 +11,13 @@
 // the run query `USE alphaseries` and then `SELECT * FROM tick` if you wanna see data
 // usual sql rules apply see Influx docs for more
 
+
 const keypress      = require('keypress');
 const fetch         = require('node-fetch');
 
+                      require('./src/util');
 const InfluxManager = require('./src/InfluxManager');
-const Logger        = require('./src/logger');
 const config        = require('./conf/config');
-
-// global (gfy)
-L = new Logger( config.loglevel || 'warn' );
 
 L.info( `Connecting to Influx ${config.influx.host}:${config.influx.port}` );
 
@@ -80,6 +78,9 @@ async function frame()
 
       }
 
+      // attach some info to help influx manager
+      data.uid = `${mex.name}:${ep.name}:${sym}`;
+
       // assume temporary glitch
       if (!res) continue;
 
@@ -96,6 +97,7 @@ async function frame()
   // Write array of 'frames'. Each frame contains the fields we are interested in (price, open interest etc)
   try {  num = influxman.write( frames ) } catch ( error ) {
     L.error( `Error writing to Influx. Is the docker service running?` );
+    L.error(error);
   }
 
   totalwritten += num;

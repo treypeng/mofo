@@ -21,7 +21,7 @@ module.exports = {
     }
   ],
 
-  frequency:      500,           // delta server polling frequency in milliseconds. 500 is good enough.
+  frequency:      1000/5,           // delta server polling frequency in milliseconds. 500 is good enough.
                                  // typical response from localhost is about 2-4 ms so can be pushed if wanted.
   loglevel: 'info'               // 'error', 'warn', 'info', 'debug' (verbose)
 

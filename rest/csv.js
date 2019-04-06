@@ -9,6 +9,7 @@ module.exports = class CSV
 
   _time(v)
   {
+    if (!v) return v;
     if (v.toISOString) return v.toISOString();
     return v;
   }

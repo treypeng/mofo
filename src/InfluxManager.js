@@ -60,15 +60,44 @@ class InfluxManager
   async readraw(instrument, from=null, to=null)
   {
     // Both params blank = last 24 hours
-    to = to || Date.now();
+    let now = Date.now();
+    to = to || now;
     from = from || to - DAY_MS;
+
+    // if user requests data in future, influx will try to supply it cos idk
+    to = Math.min(to, now);
 
     return await this.influx.query(`
              select * from tick
              where instrument = ${Influx.escape.stringLit(instrument)}
              and time >= ${from}000000 and time <= ${to}000000
-             order by time asc limit 5000`);
+             order by time asc limit 100000`);
 
+  }
+
+  async readbucket(instrument, from=null, to=null)
+  {
+    to = to || Date.now();
+    from = from || to - DAY_MS;
+
+    return await this.influx.query(`
+             select first(openinterest) as open, max(openinterest) as high, min(openinterest) as low, last(openinterest) as close
+             from tick
+             where instrument = ${Influx.escape.stringLit(instrument)}
+             and time >= ${from}000000 and time <= ${to}000000
+             GROUP by time(1m), instrument, exchange FILL(linear)`);
+
+/*
+SELECT
+first(price) AS open,
+last(price) AS close,
+max(price) AS high,
+min(price) AS low,
+sum(amount) AS volume
+FROM trades
+WHERE exchange='binance' AND pair='btcusdt' AND time > 1525777200000ms and time < 1525831200000ms
+GROUP BY time(1h), pair, exchange
+*/
   }
 
   write(frames)

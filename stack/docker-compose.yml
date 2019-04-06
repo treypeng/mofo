@@ -1,7 +1,7 @@
 version: '3'
 services:
   influxdb:
-    image: influxdb:1.7
+    image: influxdb:latest
     volumes:
       # Mount for influxdb data directory
       - ./influxdb:/var/lib/influxdb
@@ -12,7 +12,7 @@ services:
       - "8086:8086"
       - "8082:8082"
   chronograf:
-    image: chronograf:1.7
+    image: chronograf:latest
     command: --basepath /mofo
     volumes:
       # Mount for chronograf database

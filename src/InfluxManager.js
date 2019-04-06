@@ -1,6 +1,8 @@
 
 const Influx = require('influx');
 
+const DAY_MS = 1000*60*60*24;
+
 class InfluxManager
 {
   constructor(config)
@@ -50,6 +52,22 @@ class InfluxManager
 
     if (!names.includes(this.config.influx.database))
       this.influx.createDatabase(this.config.influx.database);
+
+  }
+
+
+  // unbucketed
+  async readraw(instrument, from=null, to=null)
+  {
+    // Both params blank = last 24 hours
+    to = to || Date.now();
+    from = from || to - DAY_MS;
+
+    return await this.influx.query(`
+             select * from tick
+             where instrument = ${Influx.escape.stringLit(instrument)}
+             and time >= ${from}000000 and time <= ${to}000000
+             order by time asc limit 5000`);
 
   }
 

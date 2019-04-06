@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "co-body": "^6.0.0",
+    "express": "^4.16.4",
     "influx": "^5.0.7",
     "keypress": "^0.2.1",
     "node-fetch": "^2.3.0"

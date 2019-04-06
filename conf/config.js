@@ -2,6 +2,10 @@
 
 module.exports = {
 
+  server: {
+    port: 3000
+  },
+
   influx: {
     host:           '192.168.1.33', // Need to use host ip with influx docker also with chronograf web interface
     port:           8086,           // Default influx port. Intel x86 nod?
@@ -21,7 +25,7 @@ module.exports = {
     }
   ],
 
-  frequency:      1000/5,           // delta server polling frequency in milliseconds. 500 is good enough.
+  frequency:      (1000/5)<<0,           // delta server polling frequency in milliseconds. 500 is good enough.
                                  // typical response from localhost is about 2-4 ms so can be pushed if wanted.
   loglevel: 'info'               // 'error', 'warn', 'info', 'debug' (verbose)
 

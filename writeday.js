@@ -42,7 +42,7 @@ async function _runquery_tick(from, to)
   for (let i of res)
   {
     let lines = csv.write( i.data );
-    let filename = `${filepart}_tick.csv`;
+    let filename = `${filepart}_tick_${i.instrument}.csv`;
     let outpath = path.join(__dirname, config.fileserver.path, i.instrument, filename);
 
     fs.writeFileSync(outpath, lines);

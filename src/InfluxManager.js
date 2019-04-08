@@ -16,7 +16,7 @@ class InfluxManager
   async init()
   {
 
-    L.debug(`Writing to InfluxDB ${this.config.influx.database}:'${this.config.influx.measurement}'`);
+    L.debug(`Writing to InfluxDB ${this.config.influx.database}:'${this.config.influx.tickmeasurement}'`);
 
     // This should throw an error if influx not running. But doens't. :thonking:
     this.influx = new Influx.InfluxDB({
@@ -25,7 +25,7 @@ class InfluxManager
      database: this.config.influx.database,
      schema: [
        {
-         measurement: this.config.influx.measurement,
+         measurement: this.config.influx.tickmeasurement,
          fields: {
            openinterest:  Influx.FieldType.FLOAT,
            volume:        Influx.FieldType.FLOAT,
@@ -41,6 +41,19 @@ class InfluxManager
          tags: [
            'exchange',
            'instrument'
+         ]
+       },
+       {
+         measurement: this.config.influx.liqmeasurement,
+         fields: {
+           price: Influx.FieldType.FLOAT,
+           qty:   Influx.FieldType.INTEGER
+         },
+         tags: [
+           'exchange',
+           'instrument',
+           'side',
+
          ]
        }
      ]
@@ -86,7 +99,6 @@ class InfluxManager
              and time >= ${from}000000 and time <= ${to}000000
              GROUP by time(1m), instrument, exchange FILL(linear)`;
 
-    console.log(query);
 
     return await this.influx.query(query);
 
@@ -103,7 +115,38 @@ GROUP BY time(1h), pair, exchange
 */
   }
 
-  write(frames)
+  writeliq(frame)
+  {
+    let f = frame;
+    let points = [];
+
+    points.push({
+      measurement: this.config.influx.liqmeasurement,
+      tags: {
+        exchange: 'bitmex',
+        instrument: String(f.symbol),
+        side: String(f.side)
+      },
+      fields: {
+        price: f.price,
+        qty: f.qty
+      },
+      timestamp: f.timestamp
+    });
+
+
+    this.influx.writePoints(points, { precision: 'ms' }).then(() => {
+      L.debug('Inserted OK');
+    }).catch(error => {
+      console.log(error);
+      L.error(`Error saving data to InfluxDB! Is the docker service running?`);
+    });
+
+    return 1;
+
+  }
+
+  writetick(frames)
   {
 
     let points = [];
@@ -121,7 +164,7 @@ GROUP BY time(1h), pair, exchange
       let deltavol = Math.max( 0, f.volume - (this.vdelta[f.uid].v || f.volume ));
 
       points.push({
-        measurement: this.config.influx.measurement,
+        measurement: this.config.influx.tickmeasurement,
         tags: {
           exchange: 'bitmex',
           instrument: String(f.symbol),

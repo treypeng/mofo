@@ -11,10 +11,9 @@
 // the run query `USE alphaseries` and then `SELECT * FROM tick` if you wanna see data
 // usual sql rules apply see Influx docs for more
 
-
+const MexLive       = require('./src/MexLive');
 const keypress      = require('keypress');
 const fetch         = require('node-fetch');
-
                       require('./src/util');
 const InfluxManager = require('./src/InfluxManager');
 const config        = require('./conf/config');
@@ -26,12 +25,48 @@ const influxman = new InfluxManager( config );
 let timer = null;
 
 
+let mexlive = new MexLive();
+
+mexlive.on('connected', d => {
+  // L.info(`\n${d.info} [Throttler = ${d.limit}]\n` );
+});
+
+mexlive.on('liquidation', d => {
+  if (d.status) return;
+  if (!d.data.side) return;
+
+  let frame = {
+    timestamp: Date.now(),
+    symbol: d.data.symbol,
+    side: d.data.side.toLowerCase(),
+    price: d.data.price,
+    qty: d.data.leavesQty
+  };
+
+  try {  num =  influxman.writeliq( frame ) } catch ( error ) {
+    L.error( `Error writing to Influx. Is the docker service running?` );
+    L.error(error);
+  }
+
+
+  totalliqs++;
+  // console.log(`${d.data.side}, ${d.data.symbol}, ${d.data.price}, ${d.data.leavesQty}`);
+
+});
+
+
+
 // Entry point
 (async () => {
 
   try {
 
     await influxman.init();
+
+    // Connect to separate websocket for liquidations
+    mexlive.connect('wss://www.bitmex.com/realtime');
+    mexlive.subscribe('liquidation');
+
     L.info( `Connected. Polling @ ${( 1000 / config.frequency ).toFixed(2)}Hz.` );
     L.print( `> Press [ESC] to terminate` );
     timer = setInterval( frame, config.frequency );
@@ -52,6 +87,7 @@ let timer = null;
 // Just pick the first one for now which should be mex
 let mex = config.sources[0];
 let totalwritten = 0;
+let totalliqs = 0;
 
 async function frame()
 {
@@ -95,14 +131,14 @@ async function frame()
   let num = 0;
 
   // Write array of 'frames'. Each frame contains the fields we are interested in (price, open interest etc)
-  try {  num = influxman.write( frames ) } catch ( error ) {
+  try {  num =  influxman.writetick( frames ) } catch ( error ) {
     L.error( `Error writing to Influx. Is the docker service running?` );
     L.error(error);
   }
 
   totalwritten += num;
   let tp = totalwritten > 1500 ? (totalwritten/1000).toFixed(1) + 'k' : totalwritten;
-  process.stdout.write(`\r  Written ${tp} total ticks.\t`);
+  process.stdout.write(`\r  Written ${tp} ticks and ${totalliqs} liquidations\t`);
 
 }
 

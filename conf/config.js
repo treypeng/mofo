@@ -14,8 +14,10 @@ module.exports = {
   influx: {
     host:           '192.168.1.33', // Need to use host ip with influx docker also with chronograf web interface
     port:           8086,           // Default influx port. Intel x86 nod?
-    measurement:    'tick',         // no reason to change this
+    tickmeasurement:    'tick',         // no reason to change this
+    liqmeasurement: 'liq',
     database:       'alphaseries'   // db created automatically if not found
+
   },
 
   sources: [

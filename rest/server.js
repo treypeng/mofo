@@ -100,6 +100,11 @@ app.get('/:instrument/bucket/:from/:to/:fmt', async (req, res) => {
 
   } else {
 
+    if (!data.length)
+    {
+        res.end('no data');
+        return;
+    }
     res.setHeader('Content-Type', 'text/csv');
     res.attachment(`/${data[0].instrument}_OI_1min_[${get_dt_filename()}].csv`);
     res.end(csv.write( data ));

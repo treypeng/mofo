@@ -80,12 +80,15 @@ class InfluxManager
     to = to || Date.now();
     from = from || to - DAY_MS;
 
-    return await this.influx.query(`
-             select first(openinterest) as open, max(openinterest) as high, min(openinterest) as low, last(openinterest) as close
+    let query = `select first(openinterest) as open, max(openinterest) as high, min(openinterest) as low, last(openinterest) as close
              from tick
              where instrument = ${Influx.escape.stringLit(instrument)}
              and time >= ${from}000000 and time <= ${to}000000
-             GROUP by time(1m), instrument, exchange FILL(linear)`);
+             GROUP by time(1m), instrument, exchange FILL(linear)`;
+
+    console.log(query);
+
+    return await this.influx.query(query);
 
 /*
 SELECT

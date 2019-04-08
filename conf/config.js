@@ -6,6 +6,11 @@ module.exports = {
     port: 3000
   },
 
+  fileserver: {
+    port: 5000,
+    path: './static/daily'
+  },
+
   influx: {
     host:           '192.168.1.33', // Need to use host ip with influx docker also with chronograf web interface
     port:           8086,           // Default influx port. Intel x86 nod?

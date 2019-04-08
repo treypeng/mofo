@@ -29,7 +29,6 @@ async function _runquery_tick(from, to)
 
   let now = Date.now();
   let today_open = process.argv[2] || (now - (now % DAY_MS));
-  today_open += DAY_MS;
   let yesterday_close =  today_open - 1; // 1 millisecond so 23:59:59.999
   let yesterday_open = today_open - DAY_MS;
 

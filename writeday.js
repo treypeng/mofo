@@ -24,13 +24,14 @@ async function _runquery_tick(from, to)
   return results;
 }
 
-
  (async function(){
 
   let now = Date.now();
-  let today_open = process.argv[2] || (now - (now % DAY_MS));
+  let today_open = process.argv[2] ? Number(process.argv[2]) + DAY_MS : (now - (now % DAY_MS));
   let yesterday_close =  today_open - 1; // 1 millisecond so 23:59:59.999
   let yesterday_open = today_open - DAY_MS;
+
+  console.log(`Using daily open: ${get_dt_filename(yesterday_open)}`);
 
   let res = await _runquery_tick(yesterday_open, yesterday_close);
 
@@ -52,9 +53,9 @@ async function _runquery_tick(from, to)
  })();
 
 
- function get_dt_filename()
+ function get_dt_filename(yesterday_open)
  {
-   let d = new Date(Date.now());
+   let d = new Date(yesterday_open);
    return `${d.getUTCFullYear()}-` +
           `${String(d.getUTCMonth()+1).padStart(2,'0')}-` +
           `${String(d.getUTCDate()).padStart(2,'0')}`;
